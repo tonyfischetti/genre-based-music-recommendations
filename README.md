@@ -1,6 +1,8 @@
 
 # genre-based-music-recommendations
 
+![Alt text](./sample-image.png?raw=true "Title")
+
 ## Research on combining open source "tag" (genre) metadata to inform musical artist recommendations
 
 `make-recommendation-json.R` reads the artist/manually-labeled-genre pairs from

@@ -16,13 +16,12 @@
       }
 
       .link {
-        stroke: #000;
-        stroke-opacity: .6;
+        stroke: rgba(51, 255, 0, 0.35);
       }
 
       text {
-        fill: #f00;
-        font: 10px sans-serif;
+        fill: #FFD100;
+        font: 14px sans-serif;
         font-weight:bold;
       }
 
@@ -58,7 +57,7 @@
     </style>
   </head>
 
-  <body>
+  <body style="background-color:#1f1f2e;">
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script>
@@ -111,13 +110,13 @@
             .call(force.drag);
 
         node.append("circle")
-            .attr("r", 12);
+            .attr("r", 9);
 
         node.append("title")
             .text(function(d) { return d.name; });
             
         node.append("text")
-            .attr("x", 10)
+            .attr("x", -25)
             .attr("dy", "-1em")
             .text(function(d) { return d.name; });
 
