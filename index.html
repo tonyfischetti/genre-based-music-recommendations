@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<!-- Some of this is really old CSS and D3 that I've had laying -->
+<!-- around for other projects. Much of this is likely cannibalized -->
+<!-- and borrowed from other sources -->
+
+<html>
+  <meta charset="utf-8">
+  <head>
+    <title>Musical Artist Similarity Graph</title>
+    <style>
+
+      .node circle{
+        stroke: #fff;
+        stroke-width: 1.5px;
+      }
+
+      .link {
+        stroke: #000;
+        stroke-opacity: .6;
+      }
+
+      text {
+        fill: #f00;
+        font: 10px sans-serif;
+        font-weight:bold;
+      }
+
+      .d3-tip {
+        line-height: 1;
+        font-weight: bold;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        width: 150px;
+        border-radius: 2px;
+      }
+
+      .d3-tip:after {
+        box-sizing: border-box;
+        display: inline;
+        font-size: 10px;
+        width: 100%;
+        line-height: 1;
+        color: rgba(0, 0, 0, 0.8);
+        content: "\25BC";
+        position: absolute;
+        text-align: center;
+      }
+
+      .d3-tip.n:after {
+        margin: -1px 0 0 0;
+        top: 100%;
+        left: 0;
+      }
+
+
+    </style>
+  </head>
+
+  <body>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+    <script>
+
+      var width = 2000,
+          height = 2000;
+
+      var color = d3.scale.category20();
+
+      var force = d3.layout.force()
+          .charge(-200)
+          .linkDistance(300)
+          .linkStrength(.5)
+          .charge(-1000)
+          .size([width, height]);
+
+      var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) {
+            return getTip(d);
+        })
+
+      var svg = d3.select("body").append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+      svg.call(tip);
+
+
+      d3.json("./artists.json", function(error, graph) {
+        force
+            .nodes(graph.nodes)
+            .links(graph.links)
+            .start();
+
+        var link = svg.selectAll(".link")
+            .data(graph.links)
+          .enter().append("line")
+            .attr("class", "link")
+            .style("stroke-width", function(d) { return d.weight * 4; });
+
+        var node = svg.selectAll(".node")
+            .data(graph.nodes)
+          .enter().append("g")
+            .attr("class", "node")
+            .style("fill", function(d) { return color(d.group); })
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide)
+            .call(force.drag);
+
+        node.append("circle")
+            .attr("r", 12);
+
+        node.append("title")
+            .text(function(d) { return d.name; });
+            
+        node.append("text")
+            .attr("x", 10)
+            .attr("dy", "-1em")
+            .text(function(d) { return d.name; });
+
+        force.on("tick", function() {
+          link.attr("x1", function(d) { return d.source.x; })
+              .attr("y1", function(d) { return d.source.y; })
+              .attr("x2", function(d) { return d.target.x; })
+              .attr("y2", function(d) { return d.target.y; });
+
+          node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+              
+        });
+      });
+
+      function getTip(d){
+        return d.name + "<br/>  - " + d.first + "<br/>  - " + d.second + "<br/>  - " + d.third;
+      }
+
+    </script>
+  </body>
+</html>
